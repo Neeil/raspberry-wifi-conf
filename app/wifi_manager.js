@@ -34,7 +34,7 @@ function write_template_to_file(template_path, file_name, context, callback) {
 module.exports = function() {
     // Detect which wifi driver we should use, the rtl871xdrv or the nl80211
     exec("iw list", function(error, stdout, stderr) {
-        if (stderr.match(/^nl80211 not found/)) {
+	if (stderr.match(/^nl80211 not found/)) {
             config.wifi_driver_type = "rtl871xdrv";
         }
     });
@@ -43,8 +43,8 @@ module.exports = function() {
 
     // Define some globals
     var ifconfig_fields = {
-        "hw_addr":         /HWaddr\s([^\s]+)/,
-        "inet_addr":       /inet addr:([^\s]+)/,
+        "hw_addr":         /ether\s([^\s]+)/,
+        "inet_addr":       /inet ([^\s]+)/,
     },  iwconfig_fields = {
         "ap_addr":         /Access Point:\s([^\s]+)/,
         "ap_ssid":         /ESSID:\"([^\"]+)\"/,
@@ -67,7 +67,8 @@ module.exports = function() {
         // of fields
         function run_command_and_set_fields(cmd, fields, callback) {
             exec(cmd, function(error, stdout, stderr) {
-                if (error) return callback(error);
+                //console.log(error, stdout, stderr)
+		if (error) return callback(error);
                 for (var key in fields) {
                     re = stdout.match(fields[key]);
                     if (re && re.length > 1) {
@@ -113,11 +114,15 @@ module.exports = function() {
     _is_wifi_enabled_sync = function(info) {
         // If we are not an AP, and we have a valid
         // inet_addr - wifi is enabled!
-        if (null        == _is_ap_enabled_sync(info) &&
+        
+	console.log(_is_ap_enabled_sync(info), info['inet_addr'], info['unassociated'])
+	if (null        == _is_ap_enabled_sync(info) &&
             "<unknown>" != info["inet_addr"]         &&
             "<unknown>" == info["unassociated"] ) {
             return info["inet_addr"];
         }
+	console.log('wifi enabled sync')
+	console.log(info)
         return null;
     },
 
@@ -184,7 +189,7 @@ module.exports = function() {
                 function update_interfaces(next_step) {
                     write_template_to_file(
                         "./assets/etc/network/interfaces.ap.template",
-                        "/etc/network/interfaces",
+                        "/etc/network/interfaces.d/interfaces",
                         context, next_step);
                 },
 
@@ -262,7 +267,7 @@ module.exports = function() {
                 function update_interfaces(next_step) {
                     write_template_to_file(
                         "./assets/etc/network/interfaces.wifi.template",
-                        "/etc/network/interfaces",
+                        "/etc/network/interfaces.d/interfaces",
                         connection_info, next_step);
                 },
 

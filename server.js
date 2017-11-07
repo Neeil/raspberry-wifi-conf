@@ -34,7 +34,10 @@ async.series([
     // 2. Check if wifi is enabled / connected
     function test_is_wifi_enabled(next_step) {
         wifi_manager.is_wifi_enabled(function(error, result_ip) {
-            if (result_ip) {
+	    console.log('server.js')
+	    console.log(result_ip)
+	    console.log(error)
+	    if (result_ip) {
                 console.log("\nWifi is enabled, and IP " + result_ip + " assigned");
                 var reconfigure = config.access_point.force_reconfigure || false;
                 if (reconfigure) {
