@@ -237,13 +237,13 @@ module.exports = function() {
                     _reboot_wireless_network(config.wifi_interface, next_step);
                 },
 
-                function restart_hostapd_service(next_step) {
-                    exec("service hostapd restart", function(error, stdout, stderr) {
+                //function restart_hostapd_service(next_step) {
+                    //exec("sudo systemctl restart hostapd.service", function(error, stdout, stderr) {
                         //console.log(stdout);
-                        if (!error) console.log("... hostapd restarted!");
-                        next_step();
-                    });
-                },
+                    //    if (!error) console.log("... hostapd restarted!");
+                    //    next_step();
+                    //});
+                //},
                 
 
             ], callback);
